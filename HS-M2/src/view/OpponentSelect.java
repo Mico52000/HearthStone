@@ -39,7 +39,7 @@ public class OpponentSelect extends JFrame {
 		});
 		
 		Mage =  new JButton();
-		Mage.setIcon(new ImageIcon("images/Jaina_Proudmoore.png"));
+		Mage.setIcon(new ImageIcon("images/Jaina Proudmoore.png"));
 		Mage.setBackground(Color.black);
 		Mage.setForeground(Color.black);
 		Mage.setFocusPainted(false);
@@ -55,7 +55,7 @@ public class OpponentSelect extends JFrame {
 		});
 		
 		Paladin =  new JButton();
-		Paladin.setIcon(new ImageIcon("images/Uther_Lightbringer.png"));
+		Paladin.setIcon(new ImageIcon("images/Uther Lightbringer.png"));
 		Paladin.setBackground(Color.black);
 		Paladin.setForeground(Color.black);
 		Paladin.setFocusPainted(false);
@@ -71,7 +71,7 @@ public class OpponentSelect extends JFrame {
 		});
 		
 		Priest =  new JButton();
-		Priest.setIcon(new ImageIcon("images/Anduin_Wrynn.png"));
+		Priest.setIcon(new ImageIcon("images/Anduin Wrynn.png"));
 		Priest.setBackground(Color.black);
 		Priest.setForeground(Color.black);
 		Priest.setFocusPainted(false);

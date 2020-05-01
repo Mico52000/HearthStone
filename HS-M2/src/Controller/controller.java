@@ -32,6 +32,7 @@ public class controller implements GameListener ,ActionListener{
 	private ArrayList<JButton> playerHandCards;
 	private ArrayList<JButton> opponentHandCards;
 	private JButton selectedCard;
+	private JButton targetCard;
 	private ArrayList<JButton> playerFieldCards;
 	private ArrayList<JButton> opponentFieldCards;
 	
@@ -69,6 +70,7 @@ public class controller implements GameListener ,ActionListener{
 		opponentFieldCards = new ArrayList<JButton>();
 		
 		selectedCard = new JButton();
+		targetCard = new JButton();
 		
 		gameview.getPlayCard().addActionListener(this);
 		gameview.getEndTurn().addActionListener(this);
@@ -167,6 +169,7 @@ public class controller implements GameListener ,ActionListener{
 				model = new Game(player1,player2);
 				model.setListener(this);
 				onPlayerHandUpdated();
+				onGameStart();
 			} catch (FullHandException | CloneNotSupportedException e1) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(gameview, e1.getMessage());
@@ -226,39 +229,43 @@ public class controller implements GameListener ,ActionListener{
 			
 		default:break;
 		}
+		targetCard=b;
 		if(b.getActionCommand().equalsIgnoreCase("Play Card")) {
-			System.out.println("i am inside the play Card");
-			System.out.println(selectedCard.getText());
+			
 			if(playerHandCards.contains(selectedCard)) {
-				System.out.println("i am inside 2nd if");
+				
 				int r = playerHandCards.indexOf(selectedCard);
 				Card chosen = model.getCurrentHero().getHand().get(r);
 				if(chosen  instanceof Minion)
 				{
-					System.out.println("i am minion");
+					
 					try {
 						model.getCurrentHero().playMinion((Minion) chosen);
 						
-					} catch (NotYourTurnException | NotEnoughManaException | FullFieldException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(oppselect, e1.getMessage());
+						
 					}
 				}
 				
 				
 				refreshtext();
 				onPlayerFieldUpdated();
+				onPlayerHandUpdated();
 			}
 			
 			
 			
 			
 		}
+		
 		selectedCard = b;
 		
 		
 		
+		
 	}
+
 	@Override
 	public void onGameOver() {
 		// TODO Auto-generated method stub
@@ -275,8 +282,25 @@ public class controller implements GameListener ,ActionListener{
 	}
 	
 	public void onGameStart() {
+		JButton currentHero = new JButton();
+		currentHero.setActionCommand("currentHero");
+		currentHero.setBounds(0,470,200,250);
+		currentHero.setBackground(Color.black);
+		currentHero.setForeground(Color.black);
+		currentHero.setFocusPainted(false);
+		currentHero.setIcon(new ImageIcon("images/"+model.getCurrentHero().getName()+"1.png"));
+		gameview.getDecks().add(currentHero);
+		currentHero.addActionListener(this);
 		
-		
+		JButton opponentHero = new JButton();
+		opponentHero.setBounds(0, 0, 200, 250);
+		gameview.getDecks().add(opponentHero);
+		opponentHero.setBackground(Color.black);
+		opponentHero.setForeground(Color.black);
+		opponentHero.setFocusPainted(false);
+		opponentHero.setIcon(new ImageIcon("images/"+model.getOpponent().getName()+"1.png"));
+		opponentHero.addActionListener(this);
+		opponentHero.setActionCommand("opponentHero");
 		
 	}
 	public void onPlayerHandUpdated() {
@@ -292,6 +316,7 @@ public class controller implements GameListener ,ActionListener{
 		{
 			JButton b = new JButton("<html>"+c.toString().replaceAll("\\n","<br>")+"</html>");
 		b.setIcon(new ImageIcon("images/cardBG3.jpg"));
+		b.setPreferredSize(new Dimension(100,200));
 		b.setForeground(new Color(212,175,55));
 			b.setHorizontalTextPosition(JButton.CENTER);
 			b.setVerticalTextPosition(JButton.CENTER);
@@ -308,6 +333,7 @@ public class controller implements GameListener ,ActionListener{
 			b.setHorizontalTextPosition(JButton.CENTER);
 			b.setVerticalTextPosition(JButton.CENTER);
 			b.setForeground(new Color(212,175,55));
+			b.setPreferredSize(new Dimension(100,200));
 			b.setIcon(new ImageIcon("images/cardBG3.jpg"));
 			b.addActionListener(this);
 			opponentHandCards.add(b);
@@ -337,10 +363,11 @@ public class controller implements GameListener ,ActionListener{
 			JButton b = new JButton("<html>"+c.toString().replaceAll("\\n","<br>")+"</html>");
 			b.setIcon(new ImageIcon("images/cardBG3.jpg"));
 			b.setForeground(new Color(212,175,55));
-				b.setHorizontalTextPosition(JButton.CENTER);
-				b.setVerticalTextPosition(JButton.CENTER);
-				playerFieldCards.add(b);
-				gameview.getPlayerField().add(b);
+			b.setPreferredSize(new Dimension(120,200));
+			b.setHorizontalTextPosition(JButton.CENTER);
+			b.setVerticalTextPosition(JButton.CENTER);
+			playerFieldCards.add(b);
+			gameview.getPlayerField().add(b);
 		}
 		
 		for (Card c : model.getOpponent().getField())

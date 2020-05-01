@@ -109,18 +109,18 @@ public class ViewGame extends JFrame {
 		
 		
 		playerHandCards.setPreferredSize(new Dimension(1000,playerHand.getHeight()-25));
-		playerHandCards.setLayout(new GridLayout(1,10));
+		playerHandCards.setLayout(new GridLayout(0,10));
 		playerHand.add(playerHandCards,BorderLayout.CENTER);
 		
 		
 		opponentHandCards.setPreferredSize(new Dimension(1000,opponentHand.getHeight()-25));
-		opponentHandCards.setLayout(new GridLayout(1,10));
+		opponentHandCards.setLayout(new GridLayout(0,10));
 		opponentHand.add(opponentHandCards,BorderLayout.CENTER);
 		
 		
 		
-		playerField.setLayout(new GridLayout(1,7));
-		opponentField.setLayout(new GridLayout(1,7));
+		playerField.setLayout(new GridLayout(0,7));
+		opponentField.setLayout(new GridLayout(0,7));
 		
 		
 		
