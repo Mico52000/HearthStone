@@ -19,6 +19,8 @@ public class ViewGame extends JFrame {
 	private JButton playCard;
 	private JButton usePower;
 	private JLabel userButtons;
+	private JLabel currentHeroHp;
+	private JLabel opponentHeroHp;
 	public ViewGame()
 	{
 		super();
@@ -42,6 +44,9 @@ public class ViewGame extends JFrame {
 		
 		playerHandCards = new JLabel();
 		opponentHandCards = new JLabel();
+		
+		currentHeroHp = new JLabel();
+		opponentHeroHp = new JLabel();
 		//setting sizes
 		
 		playerHand.setPreferredSize(new Dimension(1000,getHeight()/4-25));
@@ -107,6 +112,13 @@ public class ViewGame extends JFrame {
 		
 		
 		
+		opponentHeroHp.setBounds(170,145,50,50);
+//		opponentHeroHp.setFont(new Font("hello", 14, 0));
+		opponentHeroHp.setForeground(Color.white);
+		currentHeroHp.setBounds(170,145,50,50);
+		currentHeroHp.setForeground(Color.white);
+		
+		
 		
 		playerHandCards.setPreferredSize(new Dimension(1000,playerHand.getHeight()-25));
 		playerHandCards.setLayout(new GridLayout(0,10));
@@ -127,6 +139,18 @@ public class ViewGame extends JFrame {
 		revalidate();
 		repaint();
 		
+	}
+public JLabel getCurrentHeroHp() {
+		return currentHeroHp;
+	}
+	public void setCurrentHeroHp(JLabel currentHeroHp) {
+		this.currentHeroHp = currentHeroHp;
+	}
+	public JLabel getOpponentHeroHp() {
+		return opponentHeroHp;
+	}
+	public void setOpponentHeroHp(JLabel opponentHeroHp) {
+		this.opponentHeroHp = opponentHeroHp;
 	}
 public JButton getAttack() {
 		return Attack;

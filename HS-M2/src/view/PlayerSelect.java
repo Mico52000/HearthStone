@@ -161,8 +161,7 @@ public class PlayerSelect extends JFrame {
 		Warlock = warlock;
 	}
 	public static void main(String[] args) {
-		PlayerSelect p = new PlayerSelect();
-		JOptionPane.showMessageDialog(p, "Eggs are not supposed to be green.");
+		
 	}
 
 }

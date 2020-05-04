@@ -275,6 +275,10 @@ public class controller implements GameListener ,ActionListener{
 	{
 		gameview.getPlayerName().setText("***********************************************************"+model.getCurrentHero().getName() +"      HP: "+model.getCurrentHero().getCurrentHP()+"    Current Mana:  "+model.getCurrentHero().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getCurrentHero().getTotalManaCrystals()+"***********************************");
 		gameview.getOpponentName().setText("*********************************************************"+model.getOpponent().getName() +"      HP: "+model.getOpponent().getCurrentHP()+"    Current Mana:  "+model.getOpponent().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getOpponent().getTotalManaCrystals()+"***********************************");
+		
+		
+		gameview.getCurrentHeroHp().setText(model.getCurrentHero().getCurrentHP()+"");
+		gameview.getOpponentHeroHp().setText(model.getOpponent().getCurrentHP()+"");
 	}
 	
 	public static void main(String[] args) {
@@ -285,22 +289,30 @@ public class controller implements GameListener ,ActionListener{
 		JButton currentHero = new JButton();
 		currentHero.setActionCommand("currentHero");
 		currentHero.setBounds(0,470,200,250);
-		currentHero.setBackground(Color.black);
+		currentHero.setBackground(Color.GREEN);
 		currentHero.setForeground(Color.black);
 		currentHero.setFocusPainted(false);
 		currentHero.setIcon(new ImageIcon("images/"+model.getCurrentHero().getName()+"1.png"));
 		gameview.getDecks().add(currentHero);
 		currentHero.addActionListener(this);
+		currentHero.setLayout(null);
+		currentHero.add(gameview.getCurrentHeroHp());
+		gameview.getCurrentHeroHp().setText(model.getCurrentHero().getCurrentHP()+"");
+		
+		
 		
 		JButton opponentHero = new JButton();
 		opponentHero.setBounds(0, 0, 200, 250);
 		gameview.getDecks().add(opponentHero);
-		opponentHero.setBackground(Color.black);
+		opponentHero.setBackground(Color.RED);
 		opponentHero.setForeground(Color.black);
 		opponentHero.setFocusPainted(false);
 		opponentHero.setIcon(new ImageIcon("images/"+model.getOpponent().getName()+"1.png"));
 		opponentHero.addActionListener(this);
 		opponentHero.setActionCommand("opponentHero");
+		opponentHero.setLayout(null);
+		opponentHero.add(gameview.getOpponentHeroHp());
+		gameview.getOpponentHeroHp().setText(model.getOpponent().getCurrentHP()+"");
 		
 	}
 	public void onPlayerHandUpdated() {
