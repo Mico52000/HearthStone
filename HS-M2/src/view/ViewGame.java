@@ -21,6 +21,8 @@ public class ViewGame extends JFrame {
 	private JLabel userButtons;
 	private JLabel currentHeroHp;
 	private JLabel opponentHeroHp;
+	private JButton currentHero;
+	private JButton opponentHero;
 	public ViewGame()
 	{
 		super();
@@ -113,11 +115,11 @@ public class ViewGame extends JFrame {
 		
 		
 		opponentHeroHp.setBounds(170,145,50,50);
-//		opponentHeroHp.setFont(new Font("hello", 14, 0));
+		opponentHeroHp.setFont(new Font("Arial", Font.BOLD, 14));
 		opponentHeroHp.setForeground(Color.white);
 		currentHeroHp.setBounds(170,145,50,50);
 		currentHeroHp.setForeground(Color.white);
-		
+		currentHeroHp.setFont(new Font("Arial", Font.BOLD, 14));
 		
 		
 		playerHandCards.setPreferredSize(new Dimension(1000,playerHand.getHeight()-25));
@@ -136,9 +138,42 @@ public class ViewGame extends JFrame {
 		
 		
 		
+		 currentHero = new JButton();
+		currentHero.setActionCommand("currentHero");
+		currentHero.setBounds(0,470,200,250);
+		currentHero.setBackground(Color.GREEN);
+		currentHero.setForeground(Color.black);
+		currentHero.setFocusPainted(false);
+		currentHero.setLayout(null);
+		Decks.add(currentHero);
+		
+		
+		
+	    opponentHero = new JButton();
+		opponentHero.setBounds(0, 0, 200, 250);
+		Decks.add(opponentHero);
+		opponentHero.setBackground(Color.RED);
+		opponentHero.setForeground(Color.black);
+		opponentHero.setFocusPainted(false);
+		opponentHero.setLayout(null);
+		
+		
+		
 		revalidate();
 		repaint();
 		
+	}
+public JButton getOpponentHero() {
+		return opponentHero;
+	}
+	public void setOpponentHero(JButton opponentHero) {
+		this.opponentHero = opponentHero;
+	}
+public JButton getCurrentHero() {
+		return currentHero;
+	}
+	public void setCurrentHero(JButton currentHero) {
+		this.currentHero = currentHero;
 	}
 public JLabel getCurrentHeroHp() {
 		return currentHeroHp;

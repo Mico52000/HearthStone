@@ -9,12 +9,18 @@ import javax.swing.*;
 import java.awt.*;
 import engine.Game;
 import engine.GameListener;
+import exceptions.CannotAttackException;
 import exceptions.FullFieldException;
 import exceptions.FullHandException;
+import exceptions.InvalidTargetException;
 import exceptions.NotEnoughManaException;
+import exceptions.NotSummonedException;
 import exceptions.NotYourTurnException;
+import exceptions.TauntBypassException;
 import model.cards.Card;
 import model.cards.minions.Minion;
+import model.cards.spells.AOESpell;
+import model.cards.spells.FieldSpell;
 import model.heroes.*;
 import view.*;
 
@@ -229,12 +235,12 @@ public class controller implements GameListener ,ActionListener{
 			
 		default:break;
 		}
-		targetCard=b;
+		
 		if(b.getActionCommand().equalsIgnoreCase("Play Card")) {
 			
-			if(playerHandCards.contains(selectedCard)) {
+			if(playerHandCards.contains(targetCard)) {
 				
-				int r = playerHandCards.indexOf(selectedCard);
+				int r = playerHandCards.indexOf(targetCard);
 				Card chosen = model.getCurrentHero().getHand().get(r);
 				if(chosen  instanceof Minion)
 				{
@@ -243,8 +249,26 @@ public class controller implements GameListener ,ActionListener{
 						model.getCurrentHero().playMinion((Minion) chosen);
 						
 					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(oppselect, e1.getMessage());
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
 						
+					}
+				}
+				else {
+					if(chosen instanceof FieldSpell)
+					{
+						System.out.println("spell neech ");
+						try {
+							model.getCurrentHero().castSpell((FieldSpell) chosen);
+						} catch (NotYourTurnException | NotEnoughManaException e1) {
+							JOptionPane.showMessageDialog(gameview, e1.getMessage());
+						}
+					}
+					else if(chosen instanceof AOESpell) {
+						try {
+							model.getCurrentHero().castSpell((AOESpell) chosen,model.getOpponent().getField());
+						} catch (NotYourTurnException | NotEnoughManaException e1) {
+							JOptionPane.showMessageDialog(gameview, e1.getMessage());
+						}
 					}
 				}
 				
@@ -258,17 +282,90 @@ public class controller implements GameListener ,ActionListener{
 			
 			
 		}
+		if(b.getActionCommand().equalsIgnoreCase("Attack"))
+		{
+			
+			
+			if(playerFieldCards.contains(selectedCard))
+			{
+				
+				selectedCard.setForeground(new Color(0, 150, 15));
+				int r1 = playerFieldCards.indexOf(selectedCard);
+				Card chosen = model.getCurrentHero().getField().get(r1);
+				if(opponentFieldCards.contains(targetCard)) {
+					
+					int r2 = opponentFieldCards.indexOf(targetCard);
+					Card target = model.getOpponent().getField().get(r2);
+					
+					try {
+						model.getCurrentHero().attackWithMinion((Minion)chosen, (Minion)target);
+					} catch (CannotAttackException | NotYourTurnException | TauntBypassException
+							| InvalidTargetException | NotSummonedException e1) {
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+						
+					}
+				}
+				else if(targetCard.getActionCommand().equalsIgnoreCase("opponentHero")){
+					
+					try {
+						model.getCurrentHero().attackWithMinion((Minion)chosen, model.getOpponent());
+					} catch (CannotAttackException | NotYourTurnException | TauntBypassException | NotSummonedException
+							| InvalidTargetException e1) {
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+					}
+				}
+				refreshtext();
+				onPlayerFieldUpdated();
+				onPlayerHandUpdated();
+				
+			}
+		}
+		if(b.getActionCommand().equalsIgnoreCase("End Turn"))
+		{
+			try {
+				model.endTurn();
+			} catch (FullHandException | CloneNotSupportedException e1) {
+				JOptionPane.showMessageDialog(gameview, e1.getMessage());
+			}
+			refreshtext();
+			onPlayerFieldUpdated();
+			onPlayerHandUpdated();
+		}
 		
-		selectedCard = b;
 		
 		
+		
+		if(playerFieldCards.contains(b))
+		{
+			b.setForeground(new Color(0, 150, 15));
+			for(JButton j : playerFieldCards)
+			{
+				if((playerFieldCards.contains(j))&& j !=b)
+				j.setForeground(new Color(212,175,55));
+			}
+		}
+
+			
+	
+		if(opponentFieldCards.contains(b))
+		{
+			b.setForeground(Color.red);
+			for(JButton j : opponentFieldCards) {
+				if(opponentFieldCards.contains(j) && j !=b)
+					j.setForeground(new Color(212,175,55));
+				
+			}
+		}
+		JButton temp = b;
+		selectedCard=targetCard;
+		targetCard=temp;
 		
 		
 	}
 
 	@Override
 	public void onGameOver() {
-		// TODO Auto-generated method stub
+		m.playsound("sounds/victory.wav");
 		
 	}
 	public void refreshtext()
@@ -279,6 +376,12 @@ public class controller implements GameListener ,ActionListener{
 		
 		gameview.getCurrentHeroHp().setText(model.getCurrentHero().getCurrentHP()+"");
 		gameview.getOpponentHeroHp().setText(model.getOpponent().getCurrentHP()+"");
+		
+		JButton currentHero=gameview.getCurrentHero();
+		currentHero.setIcon(new ImageIcon("images/"+model.getCurrentHero().getName()+"1.png"));
+		
+		JButton opponentHero = gameview.getOpponentHero();
+		opponentHero.setIcon(new ImageIcon("images/"+model.getOpponent().getName()+"1.png"));
 	}
 	
 	public static void main(String[] args) {
@@ -286,27 +389,17 @@ public class controller implements GameListener ,ActionListener{
 	}
 	
 	public void onGameStart() {
-		JButton currentHero = new JButton();
-		currentHero.setActionCommand("currentHero");
-		currentHero.setBounds(0,470,200,250);
-		currentHero.setBackground(Color.GREEN);
-		currentHero.setForeground(Color.black);
-		currentHero.setFocusPainted(false);
+		JButton currentHero=gameview.getCurrentHero();
 		currentHero.setIcon(new ImageIcon("images/"+model.getCurrentHero().getName()+"1.png"));
 		gameview.getDecks().add(currentHero);
 		currentHero.addActionListener(this);
-		currentHero.setLayout(null);
+		
 		currentHero.add(gameview.getCurrentHeroHp());
 		gameview.getCurrentHeroHp().setText(model.getCurrentHero().getCurrentHP()+"");
 		
 		
 		
-		JButton opponentHero = new JButton();
-		opponentHero.setBounds(0, 0, 200, 250);
-		gameview.getDecks().add(opponentHero);
-		opponentHero.setBackground(Color.RED);
-		opponentHero.setForeground(Color.black);
-		opponentHero.setFocusPainted(false);
+		JButton opponentHero = gameview.getOpponentHero();
 		opponentHero.setIcon(new ImageIcon("images/"+model.getOpponent().getName()+"1.png"));
 		opponentHero.addActionListener(this);
 		opponentHero.setActionCommand("opponentHero");
@@ -378,6 +471,7 @@ public class controller implements GameListener ,ActionListener{
 			b.setPreferredSize(new Dimension(120,200));
 			b.setHorizontalTextPosition(JButton.CENTER);
 			b.setVerticalTextPosition(JButton.CENTER);
+			b.addActionListener(this);
 			playerFieldCards.add(b);
 			gameview.getPlayerField().add(b);
 		}
@@ -390,6 +484,7 @@ public class controller implements GameListener ,ActionListener{
 			b.setForeground(new Color(212,175,55));
 			b.setIcon(new ImageIcon("images/cardBG3.jpg"));
 			opponentFieldCards.add(b);
+			b.addActionListener(this);
 			gameview.getOpponentField().add(b);
 			
 			
