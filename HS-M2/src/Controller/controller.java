@@ -12,6 +12,8 @@ import engine.GameListener;
 import exceptions.CannotAttackException;
 import exceptions.FullFieldException;
 import exceptions.FullHandException;
+
+import exceptions.HeroPowerAlreadyUsedException;
 import exceptions.InvalidTargetException;
 import exceptions.NotEnoughManaException;
 import exceptions.NotSummonedException;
@@ -21,10 +23,13 @@ import model.cards.Card;
 import model.cards.minions.Minion;
 import model.cards.spells.AOESpell;
 import model.cards.spells.FieldSpell;
+import model.cards.spells.HeroTargetSpell;
+import model.cards.spells.LeechingSpell;
+import model.cards.spells.MinionTargetSpell;
 import model.heroes.*;
 import view.*;
 
-public class controller implements GameListener ,ActionListener{
+public class controller implements GameListener ,ActionListener {
 	private Game model;
 	private LandingScreen landing;
 	private PlayerSelect pselect;
@@ -177,7 +182,10 @@ public class controller implements GameListener ,ActionListener{
 				onPlayerHandUpdated();
 				onGameStart();
 			} catch (FullHandException | CloneNotSupportedException e1) {
-				// TODO Auto-generated catch block
+				if(e1 instanceof FullHandException)
+					onFullHand((FullHandException)e1);
+				else
+					
 				JOptionPane.showMessageDialog(gameview, e1.getMessage());
 				
 			}
@@ -249,14 +257,20 @@ public class controller implements GameListener ,ActionListener{
 						model.getCurrentHero().playMinion((Minion) chosen);
 						
 					} catch (Exception e1) {
+						
+						if(e1 instanceof FullHandException)
+							onFullHand((FullHandException)e1);
+						else
+							
 						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+						
 						
 					}
 				}
 				else {
 					if(chosen instanceof FieldSpell)
 					{
-						System.out.println("spell neech ");
+						
 						try {
 							model.getCurrentHero().castSpell((FieldSpell) chosen);
 						} catch (NotYourTurnException | NotEnoughManaException e1) {
@@ -270,6 +284,7 @@ public class controller implements GameListener ,ActionListener{
 							JOptionPane.showMessageDialog(gameview, e1.getMessage());
 						}
 					}
+					
 				}
 				
 				
@@ -277,10 +292,59 @@ public class controller implements GameListener ,ActionListener{
 				onPlayerFieldUpdated();
 				onPlayerHandUpdated();
 			}
+			if(opponentFieldCards.contains(targetCard) || playerFieldCards.contains(targetCard))
+			{
+				int r1 = playerHandCards.indexOf(selectedCard);
+				Card chosen = model.getCurrentHero().getHand().get(r1);
+				Card target=null;
+				if(opponentFieldCards.contains(targetCard)) {
+					int r2 = opponentFieldCards.indexOf(targetCard);
+					target = model.getOpponent().getField().get(r2);
+				}
+				else {
+					int r2 = playerFieldCards.indexOf(targetCard);
+					target = model.getCurrentHero().getField().get(r2);
+				}
+				
+				
+				if(chosen  instanceof MinionTargetSpell) {
+					try {
+						model.getCurrentHero().castSpell((MinionTargetSpell)chosen, (Minion)target);
+					} catch (NotYourTurnException | NotEnoughManaException | InvalidTargetException e1) {
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+					}
+					
+				}
+				else if (chosen instanceof LeechingSpell) {
+					try {
+						model.getCurrentHero().castSpell((LeechingSpell)chosen,(Minion)target);
+					} catch (NotYourTurnException | NotEnoughManaException e1) {
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+
+					}
+				}
+				
+			}
+			else if(targetCard.getActionCommand().equalsIgnoreCase("currentHero")|| targetCard.getActionCommand().equalsIgnoreCase("opponentHero"))
+			{
+				int r1 = playerHandCards.indexOf(selectedCard);
+				Card chosen = model.getCurrentHero().getHand().get(r1);
+				Hero target = model.getOpponent();
+				if(chosen instanceof HeroTargetSpell)
+				{
+					try {
+						model.getCurrentHero().castSpell((HeroTargetSpell)chosen, target);
+					} catch (NotYourTurnException | NotEnoughManaException e1) {
+						JOptionPane.showMessageDialog(gameview, e1.getMessage());
+					}
+				}
+			}
 			
 			
 			
-			
+			refreshtext();
+			onPlayerFieldUpdated();
+			onPlayerHandUpdated();
 		}
 		if(b.getActionCommand().equalsIgnoreCase("Attack"))
 		{
@@ -325,7 +389,28 @@ public class controller implements GameListener ,ActionListener{
 			try {
 				model.endTurn();
 			} catch (FullHandException | CloneNotSupportedException e1) {
-				JOptionPane.showMessageDialog(gameview, e1.getMessage());
+				if(e1 instanceof FullHandException)
+					onFullHand((FullHandException)e1);
+				else
+					JOptionPane.showMessageDialog(gameview, e1.getMessage());
+				
+			}
+			refreshtext();
+			onPlayerFieldUpdated();
+			onPlayerHandUpdated();
+		}
+		if(b.getActionCommand().equalsIgnoreCase("Use Hero Power"))
+		{
+			try {
+				model.getCurrentHero().useHeroPower();
+			} catch (NotEnoughManaException | HeroPowerAlreadyUsedException | NotYourTurnException | FullHandException
+					| FullFieldException | CloneNotSupportedException e1) {
+				if(e1 instanceof FullHandException)
+					onFullHand((FullHandException)e1);
+				else
+					
+					JOptionPane.showMessageDialog(gameview, e1.getMessage());
+				
 			}
 			refreshtext();
 			onPlayerFieldUpdated();
@@ -370,8 +455,8 @@ public class controller implements GameListener ,ActionListener{
 	}
 	public void refreshtext()
 	{
-		gameview.getPlayerName().setText("***********************************************************"+model.getCurrentHero().getName() +"      HP: "+model.getCurrentHero().getCurrentHP()+"    Current Mana:  "+model.getCurrentHero().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getCurrentHero().getTotalManaCrystals()+"***********************************");
-		gameview.getOpponentName().setText("*********************************************************"+model.getOpponent().getName() +"      HP: "+model.getOpponent().getCurrentHP()+"    Current Mana:  "+model.getOpponent().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getOpponent().getTotalManaCrystals()+"***********************************");
+		gameview.getPlayerName().setText("***********************************************************"+model.getCurrentHero().getName() +"       Current Mana:  "+model.getCurrentHero().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getCurrentHero().getTotalManaCrystals()+"   Cards in Deck: "+model.getCurrentHero().getDeck().size()+"***********************************");
+		gameview.getOpponentName().setText("*********************************************************"+model.getOpponent().getName() +"         Current Mana:  "+model.getOpponent().getCurrentManaCrystals()+"    Total Mana Crystals:  "+model.getOpponent().getTotalManaCrystals()+ "   Cards in Deck: "+model.getOpponent().getDeck().size()+"***********************************");
 		
 		
 		gameview.getCurrentHeroHp().setText(model.getCurrentHero().getCurrentHP()+"");
@@ -492,6 +577,23 @@ public class controller implements GameListener ,ActionListener{
 		}
 		gameview.repaint();
 		gameview.revalidate();
+		
+	}
+
+	public void onFullHand(FullHandException x) {
+		Card c = x.getBurned();
+		JLabel text = new JLabel(x.getMessage());
+		JButton b = new JButton("<html>"+c.toString().replaceAll("\\n","<br>")+"</html>");
+		b.setHorizontalTextPosition(JButton.CENTER);
+		b.setVerticalTextPosition(JButton.CENTER);
+		b.setForeground(new Color(212,175,55));
+		b.setIcon(new ImageIcon("images/cardBG3.jpg"));
+		JFrame burned = new JFrame("Burned Card");
+		burned.setBounds(500,300,350,250);
+		burned.add(b,BorderLayout.CENTER);
+		burned.add(text,BorderLayout.NORTH);
+		burned.setVisible(true);
+		
 		
 	}
 
