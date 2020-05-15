@@ -38,5 +38,6 @@ public abstract class Card implements Cloneable {
 	public Card clone() throws CloneNotSupportedException {
 		return (Card) super.clone();
 	}
-
+	public abstract String toString1();
 }
+

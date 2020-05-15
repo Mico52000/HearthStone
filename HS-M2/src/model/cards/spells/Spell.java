@@ -12,5 +12,8 @@ public abstract class Spell extends Card {
 		return "Spell: "+this.getName()+"\n"+ "Cost: "+this.getManaCost()+"\n"+"Rarity: "+this.getRarity();
 		
 	}
+	public String toString1() {
+		return "Spell: "+this.getName()+"\n"+ "Cost: "+this.getManaCost()+"\n"+"Rarity: "+this.getRarity();
+	}
 
 }

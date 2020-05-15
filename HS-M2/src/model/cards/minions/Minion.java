@@ -137,4 +137,10 @@ public class Minion extends Card implements Cloneable {
 		+" HP: "+this.getCurrentHP()+"\n"+"Taunt:"+this.isTaunt()+"\n"+"Divine:"+this.isDivine()+"\n"+"sleeping:"+this.isSleeping();
 				
 	}
+	public String toString1() {
+		return "Minion: " +this.getName()+"\n" +"Rarity: "+ this.getRarity()+"\n"+ "Cost: "+this.getManaCost()+"\n"+"atk: "+this.getAttack()
+		+" HP: "+this.getCurrentHP()+"\n"+"Taunt:"+this.isTaunt()+"\n"+"Divine:"+this.isDivine()+"\n"+"Charge:"+!(this.isSleeping());
+				
+		
+	}
 }

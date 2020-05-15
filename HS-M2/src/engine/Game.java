@@ -32,8 +32,8 @@ public class Game implements ActionValidator, HeroListener {
 		int coin = (int) (Math.random() * 2);
 		currentHero = coin == 0 ? firstHero : secondHero;
 		opponent = currentHero == firstHero ? secondHero : firstHero;
-		currentHero.setCurrentManaCrystals(10);
-		currentHero.setTotalManaCrystals(10);
+		currentHero.setCurrentManaCrystals(1);
+		currentHero.setTotalManaCrystals(1);
 		for (int i = 0; i < 3; i++) {
 			currentHero.drawCard();
 		}

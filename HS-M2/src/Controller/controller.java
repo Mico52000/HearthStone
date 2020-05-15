@@ -402,7 +402,61 @@ public class controller implements GameListener ,ActionListener {
 		if(b.getActionCommand().equalsIgnoreCase("Use Hero Power"))
 		{
 			try {
-				model.getCurrentHero().useHeroPower();
+				if(model.getCurrentHero() instanceof Mage) {
+					if(opponentFieldCards.contains(targetCard))
+					{
+						int r = opponentFieldCards.indexOf(targetCard);
+						Card chosen = model.getOpponent().getField().get(r);
+						Mage m = (Mage)model.getCurrentHero();
+						m.useHeroPower((Minion)chosen);
+					}
+					else if(playerFieldCards.contains(targetCard))
+					{
+						int r = playerFieldCards.indexOf(targetCard);
+						Card chosen = model.getCurrentHero().getField().get(r);
+						Mage m = (Mage)model.getCurrentHero();
+						m.useHeroPower((Minion)chosen);
+					}
+					else if(targetCard.getActionCommand().equalsIgnoreCase("opponentHero"))
+					{
+						Mage m = (Mage)model.getCurrentHero();
+						m.useHeroPower(model.getOpponent());
+					}
+					else if(targetCard.getActionCommand().equalsIgnoreCase("currentHero"))
+					{
+						Mage m = (Mage)model.getCurrentHero();
+						m.useHeroPower(model.getCurrentHero());
+					}
+				}
+				if(model.getCurrentHero() instanceof Priest) {
+					if(opponentFieldCards.contains(targetCard))
+					{
+						int r = opponentFieldCards.indexOf(targetCard);
+						Card chosen = model.getOpponent().getField().get(r);
+						Priest p = (Priest)model.getCurrentHero();
+						p.useHeroPower((Minion)chosen);
+					}
+					else if(playerFieldCards.contains(targetCard))
+					{
+						int r = playerFieldCards.indexOf(targetCard);
+						Card chosen = model.getCurrentHero().getField().get(r);
+						Priest p = (Priest)model.getCurrentHero();
+						p.useHeroPower((Minion)chosen);
+					}
+					else if(targetCard.getActionCommand().equalsIgnoreCase("opponentHero"))
+					{
+						Priest p = (Priest)model.getCurrentHero();
+						p.useHeroPower(model.getOpponent());
+					}
+					else if(targetCard.getActionCommand().equalsIgnoreCase("currentHero"))
+					{
+						Priest p = (Priest)model.getCurrentHero();
+						p.useHeroPower(model.getCurrentHero());
+					}
+					
+				}
+				else if(!(model.getCurrentHero() instanceof Mage || model.getCurrentHero() instanceof Priest))
+					model.getCurrentHero().useHeroPower();
 			} catch (NotEnoughManaException | HeroPowerAlreadyUsedException | NotYourTurnException | FullHandException
 					| FullFieldException | CloneNotSupportedException e1) {
 				if(e1 instanceof FullHandException)
@@ -451,6 +505,15 @@ public class controller implements GameListener ,ActionListener {
 	@Override
 	public void onGameOver() {
 		m.playsound("sounds/victory.wav");
+		if(model.getCurrentHero().getCurrentHP()==0)
+		JOptionPane.showMessageDialog(gameview,model.getOpponent().getName() +"Wins !!"  );
+		if(model.getOpponent().getCurrentHP()==0)
+			JOptionPane.showMessageDialog(gameview,model.getCurrentHero().getName()+"Wins !!"  );
+		gameview.dispose();
+		System.exit(0);
+		
+		
+		
 		
 	}
 	public void refreshtext()
@@ -504,7 +567,7 @@ public class controller implements GameListener ,ActionListener {
 		
 		for (Card c : model.getCurrentHero().getHand())
 		{
-			JButton b = new JButton("<html>"+c.toString().replaceAll("\\n","<br>")+"</html>");
+			JButton b = new JButton("<html>"+c.toString1().replaceAll("\\n","<br>")+"</html>");
 		b.setIcon(new ImageIcon("images/cardBG3.jpg"));
 		b.setPreferredSize(new Dimension(100,200));
 		b.setForeground(new Color(212,175,55));
@@ -513,6 +576,7 @@ public class controller implements GameListener ,ActionListener {
 			b.addActionListener(this);
 			playerHandCards.add(b);
 			gameview.getPlayerHandCards().add(b);
+			
 			
 			
 		}

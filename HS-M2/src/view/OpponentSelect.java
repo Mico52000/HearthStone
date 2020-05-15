@@ -156,9 +156,5 @@ public class OpponentSelect extends JFrame {
 	public void setWarlock(JButton warlock) {
 		Warlock = warlock;
 	}
-	public static void main(String[] args) {
-		PlayerSelect p = new PlayerSelect();
-		JOptionPane.showMessageDialog(p, "Eggs are not supposed to be green.");
-	}
 
 }
